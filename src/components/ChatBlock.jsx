@@ -1,6 +1,16 @@
 import React from "react";
 
 const ChatBlock = ({msg, user, type}) => {
+
+  const datefunction = (date)=>{
+    var today = new Date();
+    var s_date = new Date(date)
+    if(today.setHours(0,0,0,0) == s_date.setHours(0,0,0,0))
+    { 
+      return "Today"; 
+    }
+    else { return s_date.toLocaleString() } 
+  }
   const url = import.meta.env.VITE_REACT_APP_IMAGE_URL;
   if(msg.type=='image')
   {
@@ -14,10 +24,12 @@ const ChatBlock = ({msg, user, type}) => {
     <div className={`direct-chat-msg ${type}`}>
       <div className="direct-chat-infos clearfix">
         <span className="direct-chat-name float-right">
-          {user.firstname}
+         {
+          type=='right'?'':user.firstname
+         }
         </span>
         <span className="direct-chat-timestamp float-left">
-          {new Date(msg.timestamp).toLocaleString()}
+         {datefunction(msg.timestamp)}
         </span>
       </div>
       <img
