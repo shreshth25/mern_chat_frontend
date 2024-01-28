@@ -20,30 +20,33 @@ import {
   Chat,
   PrivateChat,
 } from "./pages/index";
+import { SocketProvider } from "./context/socketContext";
 
 function App() {
   return (
     <Provider store={store}>
+      <SocketProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<PrivateRoute element={<Layout />} />}>
-            <Route path="holiday" element={<Holiday />} />
-            <Route path="logout" element={<Logout />} />
-            <Route path="aichat" element={<AIChat />} />
-            <Route path="users" element={<Users />} />
-            <Route path="attendance" element={<Attendance />} />
-            <Route path="progress" element={<Progress />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="upload" element={<Upload />} />
-            <Route path="chat" element={<Chat />} />
-            <Route path="privatechat" element={<PrivateChat />} />
-            
-          </Route>
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<Page400 />} />
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path="/" element={<PrivateRoute element={<Layout />} />}>
+          <Route path="holiday" element={<Holiday />} />
+          <Route path="logout" element={<Logout />} />
+          <Route path="aichat" element={<AIChat />} />
+          <Route path="users" element={<Users />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="progress" element={<Progress />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="upload" element={<Upload />} />
+          <Route path="chat" element={<Chat />} />
+          <Route path="privatechat" element={<PrivateChat />} />
+          
+        </Route>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Page400 />} />
+      </Routes>
+    </BrowserRouter>
+      </SocketProvider>
     </Provider>
   );
 }

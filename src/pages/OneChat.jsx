@@ -1,15 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import io from "socket.io-client";
-import { getAPI, postAPI } from "../helpers/apis";
+// import io from "socket.io-client";
+import { getAPI, postAPI, postFormDataAPI } from "../helpers/apis";
+import EmojiPicker  from 'emoji-picker-react'
+import ChatBlock from "../components/ChatBlock";
+import { useSocket } from "../context/socketContext";
 
-const socket = io(import.meta.env.VITE_REACT_APP_IMAGE_URL);
+// const socket = io(import.meta.env.VITE_REACT_APP_IMAGE_URL);
 
 function OneChat({ selectedUser, setTyping }) {
-  const url = import.meta.env.VITE_REACT_APP_IMAGE_URL;
+  const socket = useSocket();
   const user = useSelector((state) => state.user);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+  const [showemoji, setShowEmoji] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -24,6 +28,7 @@ function OneChat({ selectedUser, setTyping }) {
     });
     setMessages(res.chats);
   };
+
   useEffect(() => {
     socket.emit("setUserId", user.user._id);
 
@@ -40,12 +45,12 @@ function OneChat({ selectedUser, setTyping }) {
     socket.on("typing", (msg) => {
       console.log(msg);
       if (msg.receiver == user.user._id && msg.sender == selectedUser._id) {
-        setTyping(msg.name + " is typing...");
+        setTyping("Typing...");
       } else if (
         msg.sender == user.user._id &&
         msg.receiver == selectedUser._id
       ) {
-        setMessages(msg.name + " is typing...");
+        setMessages("Typing...");
       } else {
         setTyping("");
       }
@@ -82,53 +87,29 @@ function OneChat({ selectedUser, setTyping }) {
     socket.emit("typing", "");
   };
 
+  const uploadImage = async(e)=>{
+    console.log(e.target.files[0])
+    const form = new FormData()
+    form.append('image', e.target.files[0])
+    form.append('sender',user.user._id)
+    form.append('receiver', selectedUser._id)
+    const res = await postFormDataAPI('chat/upload', form)
+  }
+
+  const showEmoji = () => {
+    setShowEmoji((prevstate)=>!prevstate)
+  };
+
+
   return (
     <div className="direct-chat direct-chat-success">
       <div style={{ height: "280px", overflow: "scroll", overflowX: "hidden" }}>
         {messages.map((msg, index) => (
           <div className="p-2" key={index} ref={ref}>
             {msg.sender == user.user._id ? (
-              <div className="direct-chat-msg right">
-                <div className="direct-chat-infos clearfix">
-                  <span className="direct-chat-name float-right">
-                    {user.user.firstname}
-                  </span>
-                  <span className="direct-chat-timestamp float-left">
-                    {new Date(msg.timestamp).toLocaleString()}
-                  </span>
-                </div>
-                <img
-                  className="direct-chat-img"
-                  src={
-                    user.user.image
-                      ? url + user.user.image
-                      : "dist/img/AdminLTELogo.png"
-                  }
-                  alt="Message User Image"
-                />
-                <div className="direct-chat-text">{msg.text}</div>
-              </div>
+              <ChatBlock user = {user.user} msg={msg} type="right"></ChatBlock>
             ) : (
-              <div className="direct-chat-msg">
-                <div className="direct-chat-infos clearfix">
-                  <span className="direct-chat-name float-left">
-                    {selectedUser.firstname}
-                  </span>
-                  <span className="direct-chat-timestamp float-right">
-                    {new Date(msg.timestamp).toLocaleString()}
-                  </span>
-                </div>
-                <img
-                  className="direct-chat-img"
-                  src={
-                    selectedUser.image
-                      ? url + selectedUser.image
-                      : "dist/img/AdminLTELogo.png"
-                  }
-                  alt="Message User Image"
-                />
-                <div className="direct-chat-text">{msg.text}</div>
-              </div>
+              <ChatBlock user = {selectedUser}  msg={msg} type=""></ChatBlock>
             )}
           </div>
         ))}
@@ -151,6 +132,7 @@ function OneChat({ selectedUser, setTyping }) {
             type="file"
             id="profilePictureInput"
             accept="image/*"
+            onChange={(e)=>uploadImage(e)}
             style={{ display: 'none' }}
           />
           </label>
@@ -163,8 +145,27 @@ function OneChat({ selectedUser, setTyping }) {
           style={{ display: 'none' }}
         />
         </label>
+        <label className="btn btn-info">
+        🙂
+        <input
+        type="button"
+        onClick={showEmoji}
+        style={{ display: 'none' }}
+      />
+      </label>
         </span>
       </div>
+      {
+        showemoji?
+        <EmojiPicker
+        searchDisabled="true"
+        previewConfig={{ showPreview: false }}
+        emojiStyle="google"
+        onEmojiClick={(e) => setMessage((input) => input + e.emoji)}
+        height={200}
+        width="100%"
+      /> :''
+      }
     </div>
     
     </div>
