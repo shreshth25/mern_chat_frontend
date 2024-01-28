@@ -20,12 +20,10 @@ import {
   Chat,
   PrivateChat,
 } from "./pages/index";
-import { SocketProvider } from "./context/socketContext";
 
 function App() {
   return (
     <Provider store={store}>
-      <SocketProvider>
       <BrowserRouter>
       <Routes>
         <Route path="/" element={<PrivateRoute element={<Layout />} />}>
@@ -46,7 +44,6 @@ function App() {
         <Route path="*" element={<Page400 />} />
       </Routes>
     </BrowserRouter>
-      </SocketProvider>
     </Provider>
   );
 }

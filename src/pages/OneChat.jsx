@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-// import io from "socket.io-client";
+import io from "socket.io-client";
 import { getAPI, postAPI, postFormDataAPI } from "../helpers/apis";
 import EmojiPicker  from 'emoji-picker-react'
 import ChatBlock from "../components/ChatBlock";
-import { useSocket } from "../context/socketContext";
-
+const socket = io(import.meta.env.VITE_REACT_APP_IMAGE_URL)
 // const socket = io(import.meta.env.VITE_REACT_APP_IMAGE_URL);
 
 function OneChat({ selectedUser, setTyping }) {
-  const socket = useSocket();
   const user = useSelector((state) => state.user);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
@@ -43,7 +41,6 @@ function OneChat({ selectedUser, setTyping }) {
     });
 
     socket.on("typing", (msg) => {
-      console.log(msg);
       if (msg.receiver == user.user._id && msg.sender == selectedUser._id) {
         setTyping("Typing...");
       } else if (
@@ -88,7 +85,6 @@ function OneChat({ selectedUser, setTyping }) {
   };
 
   const uploadImage = async(e)=>{
-    console.log(e.target.files[0])
     const form = new FormData()
     form.append('image', e.target.files[0])
     form.append('sender',user.user._id)

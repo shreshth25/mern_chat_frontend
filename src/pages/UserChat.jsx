@@ -58,14 +58,12 @@ const UserChat = ({ selectedUser }) => {
           />
         </div>
         <div className="col-9">
-          <h6 className="mb-0">
             <h6 className="text-bold" style={{marginLeft:"10px"}}>
               {selectedUser.firstname} {selectedUser.lastname}
             </h6>
-            <div className="text-muted" style={{marginLeft:"10px"}}>
+            <h6 className="text-muted" style={{marginLeft:"10px"}}>
              {typing}
-            </div>
-          </h6>
+            </h6>
         </div>
       </div>
       
